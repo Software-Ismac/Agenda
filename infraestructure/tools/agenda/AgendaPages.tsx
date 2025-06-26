@@ -1,56 +1,44 @@
+import React, { useMemo, useState } from "react";
 import { useIsmacData } from "@/context/withContext";
-import { Button } from "@heroui/react";
-import { Img } from "cllk";
-import React, { useRef, useState, useMemo } from "react";
-import HTMLFlipBook from "react-pageflip";
-import { useSearchParams } from "next/navigation"; // si usas App Router (Next.js 13+)
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { useSearchParams } from "next/navigation";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { EffectFlip, Navigation, Keyboard } from "swiper";
+
+import "swiper/css";
+import "swiper/css/effect-flip";
+import "swiper/css/navigation";
 
 function AgendaPages() {
-  const bookRef = useRef<any>(null);
-  const [page, setPage] = useState(0);
   const { cupones } = useIsmacData();
-
   const searchParams = useSearchParams();
   const type = searchParams?.get("type");
 
-  // Filtrado según query
   const filteredCupones = useMemo(() => {
-    if (type === "agenda")
-      //@ts-ignore
-      return cupones.filter((x) => x?.isAgenda);
-    if (type === "cupons")
-      //@ts-ignore
-      return cupones.filter((x) => !x?.isAgenda);
-    return cupones; // sin query: todos
+    if (type === "agenda") return cupones.filter((x) => x?.isAgenda);
+    if (type === "cupons") return cupones.filter((x) => !x?.isAgenda);
+    return cupones;
   }, [cupones, type]);
 
-  const totalPages = filteredCupones.length;
+  // Estado para modal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImage, setModalImage] = useState(null);
 
-  const nextPage = () => {
-    if (page >= totalPages - 1) {
-      bookRef.current.pageFlip().turnToPage(0);
-      setPage(0);
-    } else {
-      bookRef.current.pageFlip().flipNext();
-    }
+  // Función para abrir modal con imagen
+  const openModal = (imgSrc) => {
+    setModalImage(imgSrc);
+    setModalOpen(true);
   };
 
-  const prevPage = () => {
-    if (page <= 0) {
-      bookRef.current.pageFlip().turnToPage(totalPages - 1);
-      setPage(totalPages - 1);
-    } else {
-      bookRef.current.pageFlip().flipPrev();
-    }
-  };
-
-  const onPageFlip = (e: any) => {
-    setPage(e.data);
+  // Cerrar modal
+  const closeModal = () => {
+    setModalOpen(false);
+    setModalImage(null);
   };
 
   return (
-    <div className="p-5 space-y-3 max-w-[450px] mx-auto">
-      <h2 className="text-center text-xl font-bold">
+    <div className="p-5 max-w-[450px] mx-auto relative">
+      <h2 className="text-center text-xl font-bold mb-4">
         {type === "agenda"
           ? "Agenda"
           : type === "cupons"
@@ -58,40 +46,81 @@ function AgendaPages() {
           : "Todos los Cupones"}
       </h2>
 
-      <div className="flex justify-between mt-4">
-        <Button onPress={prevPage}>Anterior</Button>
-        <Button onPress={nextPage}>Siguiente</Button>
-      </div>
-      {/* @ts-ignore */}
-      <HTMLFlipBook
-        ref={bookRef}
-        width={320}
-        height={450}
-        size="stretch"
-        minWidth={300}
-        maxWidth={360}
-        minHeight={420}
-        maxHeight={520}
-        showCover={false}
-        mobileScrollSupport={true}
-        maxShadowOpacity={0.5}
-        onFlip={onPageFlip}
-        className="mx-auto"
+      <Swiper
+        modules={[EffectFlip, Navigation, Keyboard]}
+        effect="flip"
+        grabCursor={true}
+        navigation={true}
+        keyboard={{ enabled: true }}
+        className="w-full h-[520px]"
+        style={{ maxWidth: 360, maxHeight: 520 }}
+        flipEffect={{
+          slideShadows: true,
+          limitRotation: true,
+        }}
       >
         {filteredCupones.map((src, i) => (
-          <div
+          <SwiperSlide
             key={i}
-            className="w-full h-full flex items-center justify-center bg-white"
+            className="flex items-center justify-center bg-white cursor-pointer"
+            onClick={() => openModal(src.uri)}
           >
-            <Img
-              width="100%"
+            <img
               src={src.uri}
               alt={`Cupón ${i + 1}`}
-              className="w-full h-full object-contain"
+              className="object-contain w-full h-full"
+              style={{ maxHeight: 520 }}
+              draggable={false}
             />
-          </div>
+          </SwiperSlide>
         ))}
-      </HTMLFlipBook>
+      </Swiper>
+
+      {/* Modal */}
+      {modalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+          onClick={closeModal}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Zoomed image modal"
+        >
+          <div
+            className="relative max-w-[90vw] max-h-[90vh] bg-black"
+            onClick={(e) => e.stopPropagation()} // evitar cerrar al click dentro del modal
+          >
+            <button
+              onClick={closeModal}
+              className="absolute top-2 right-2 text-white text-3xl font-bold z-50"
+              aria-label="Cerrar modal"
+              type="button"
+            >
+              &times;
+            </button>
+
+            <TransformWrapper
+              doubleClick={{ disabled: false }}
+              pinch={{ disabled: false }}
+              wheel={{ disabled: false }}
+              pan={{ disabled: false }}
+              minScale={1}
+              maxScale={5}
+              initialScale={1}
+              centerOnInit={true}
+              limitToBounds={true}
+            >
+              <TransformComponent>
+                <img
+                  src={modalImage}
+                  alt="Imagen ampliada"
+                  className="max-w-full max-h-[90vh] object-contain"
+                  draggable={false}
+                />
+              </TransformComponent>
+            </TransformWrapper>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

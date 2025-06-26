@@ -20,8 +20,11 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
-import { IsmacDataProvider } from "@/context/withContext";
 
+import "swiper/css/effect-flip";
+
+import { IsmacDataProvider } from "@/context/withContext";
+import "react-medium-image-zoom/dist/styles.css";
 const queryClient = new QueryClient();
 export default function App({ Component, pageProps }: AppProps) {
   return (
