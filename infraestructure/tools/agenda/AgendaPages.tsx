@@ -111,7 +111,7 @@ function AgendaPages() {
             >
               <TransformComponent>
                 <img
-                  src={modalImage}
+                  src={`${modalImage}?w=2000`}
                   alt="Imagen ampliada"
                   className="max-w-full max-h-[90vh] object-contain"
                   draggable={false}
