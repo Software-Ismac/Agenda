@@ -1,4 +1,3 @@
-import React from "react";
 import { locales } from "@blocknote/core";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
@@ -9,11 +8,10 @@ import { useOpenBaas } from "openbaas-sdk-react";
 import { Button, Card, CardBody, Input } from "@heroui/react";
 import ModalTrigger from "@/components/modal/ModalTrigger";
 import ButtonCard from "@/components/button/ButtonCard";
-import { useNoteEditSync } from "@/backend/Note/infrastructure/useNotes";
 
 const EditorComponent = () => {
-  const { note } = useNote();
-  const updateNote = useNoteEditSync();
+  const { note, updateNote } = useNote();
+
   const { uri, accessToken } = useOpenBaas();
   const editor = useCreateBlockNote({
     initialContent: JSON.parse(note?.note ?? ""),
@@ -39,13 +37,13 @@ const EditorComponent = () => {
     },
     dictionary: locales.es,
   });
-
   editor.onChange((e) => {
-    //@ts-ignore
     updateNote({ note: JSON.stringify(e.document) });
   });
+
   const { push } = useRouter();
   const { messagePromise } = useMessage();
+
   return (
     <>
       <Card>

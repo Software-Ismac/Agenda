@@ -1,4 +1,5 @@
 import { NoteProvider } from "@/backend/useNote/useNote";
+import { NoteSyncProvider } from "@/context/NoteSyncProvider";
 import { UserProvider } from "@/backend/useUser/useUser";
 import { client } from "@/client";
 import { Navbar } from "@/components";

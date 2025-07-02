@@ -66,7 +66,7 @@ function AgendaPages() {
             onClick={() => openModal(src.uri)}
           >
             <img
-              src={src.uri}
+              src={`${src.uri}?w=2000`}
               alt={`Cupón ${i + 1}`}
               className="object-contain w-full h-full"
               style={{ maxHeight: 520 }}

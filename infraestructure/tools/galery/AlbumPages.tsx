@@ -24,13 +24,10 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 function AlbumPages() {
-  const { uri } = useOpenBaas();
   const { album, getAlbum } = useAlbums();
-  const { data } = useSSE(`${uri}/v1/album/${album?.albumId}`);
 
-  const { updateAlbum } = useAlbum();
   const { user } = useUser();
-  const { handleSubmit, register, reset } = useForm();
+  const { handleSubmit, register } = useForm();
   const { messagePromise } = useMessage();
   const { createImage, getImages } = useImage();
   const { push } = useRouter();

@@ -8,7 +8,6 @@ import SeletedHeader from "./components/SeletedHeader";
 
 function GaleryPages() {
   const { images } = useImage();
-
   const { createImage, getImages } = useImage();
   const { messagePromise } = useMessage();
   const [isSelecting, setIsSelecting] = useState(false);
