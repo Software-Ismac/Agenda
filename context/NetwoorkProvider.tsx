@@ -1,7 +1,33 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 const NetworkContext = createContext({ isOnline: true });
-
+import { App } from "@capacitor/app";
+import { useRouter } from "next/router";
 export const NetworkProvider = ({ children }: { children: any }) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    let listenerHandle: any | null = null;
+
+    const setupListener = async () => {
+      listenerHandle = await App.addListener("backButton", () => {
+        if (window.history.length > 1) {
+          router.back();
+        } else {
+          if (confirm("¿Salir de la app?")) {
+            App.exitApp();
+          }
+        }
+      });
+    };
+
+    setupListener();
+
+    return () => {
+      if (listenerHandle) {
+        listenerHandle.remove();
+      }
+    };
+  }, [router]);
   const [isOnline, setOnline] = useState<boolean>(true);
 
   useEffect(() => {

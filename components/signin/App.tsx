@@ -21,7 +21,7 @@ export default function Signin() {
   const handleConfirmationCode = async (email: string, code: string) => {
     await hCC(email, code);
     // Placeholder for the code confirmation function
-    console.log("Confirming code:", code, "for email:", email);
+
     return true;
   };
 

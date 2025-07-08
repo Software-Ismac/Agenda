@@ -17,11 +17,7 @@ function Error401() {
             página de inicio.
           </p>
           <NavLink href="/">
-            <div
-              className={`px-8 py-3 font-semibold rounded ${color(
-                "dark"
-              )} ${color("light")}`}
-            >
+            <div className={`px-8 py-3 font-semibold rounded bg-zinc-200`}>
               Volver a la página de inicio
             </div>
           </NavLink>

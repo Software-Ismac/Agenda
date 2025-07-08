@@ -115,7 +115,8 @@ export const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({
           </p>
           <p className="text-default-500 text-center text-xs">
             Revisa tu bandeja de entrada y sigue las instrucciones para
-            completar el proceso
+            completar el proceso. Si no encuentras el correo, recuerda revisar
+            también la carpeta de correo no deseado o spam.
           </p>
         </CardHeader>
 
@@ -150,11 +151,13 @@ export const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({
             </p>
 
             <Button
+              isDisabled={timeLeft > 0} // Solo habilitado si el tiempo es 0
               onPress={() => {
                 handleGenereteCode(email)
                   .then(() => {
                     console.log("Código reenviado correctamente");
                   })
+                  //@ts-ignore
                   .catch((error) => {
                     console.error("Error al reenviar el código:", error);
                   });
@@ -170,7 +173,6 @@ export const TwoFactorAuth: React.FC<TwoFactorAuthProps> = ({
             </Button>
 
             <Button
-              isDisabled={timeLeft > 0} // Solo habilitado si el tiempo es 0
               variant="light"
               className="w-full mt-2"
               startContent={

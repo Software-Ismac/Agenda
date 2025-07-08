@@ -18,8 +18,8 @@ export const GamesList: React.FC = () => {
       <header className="text-center space-y-2">
         <h1 className="text-3xl font-bold text-foreground">Arcade Games</h1>
         <p className="text-foreground-500 max-w-lg mx-auto">
-          Enjoy our collection of classic and modern games that you can play
-          directly in your browser
+          Disfruta de nuestra colección de juegos clásicos y modernos que puedes
+          jugar directamente en tu navegador
         </p>
       </header>
 
@@ -31,22 +31,6 @@ export const GamesList: React.FC = () => {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-foreground">All Games</h2>
-          <div className="flex gap-2">
-            <Button
-              variant="flat"
-              size="sm"
-              startContent={<Icon icon="lucide:list" />}
-            >
-              List
-            </Button>
-            <Button
-              variant="flat"
-              size="sm"
-              startContent={<Icon icon="lucide:grid" />}
-            >
-              Grid
-            </Button>
-          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {games.map((game) => (

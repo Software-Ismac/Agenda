@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   Button,
   Card,
@@ -54,7 +55,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
     },
     flow: "implicit",
   });
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
@@ -131,26 +132,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({
         <CardFooter className="flex flex-col items-center gap-3 pt-0">
           <p className="text-tiny text-default-500">
             Al iniciar sesión, aceptas nuestros{" "}
-            <a href="#" className="text-primary underline text-tiny">
+            <Link href="/terms" className="text-primary underline text-tiny">
               Términos de servicio
-            </a>{" "}
+            </Link>{" "}
             y{" "}
-            <a href="#" className="text-primary underline text-tiny">
+            <Link href="/privacy" className="text-primary underline text-tiny">
               Política de privacidad
-            </a>
+            </Link>
           </p>
-
-          {/* <div className="flex items-center gap-1 w-full justify-center">
-            <p className="text-sm text-default-600">¿No tienes una cuenta?</p>
-            <Button
-              variant="light"
-              color="primary"
-              onPress={onRegister}
-              className="font-medium"
-            >
-              Regístrate
-            </Button>
-          </div> */}
         </CardFooter>
       </Card>
     </motion.div>

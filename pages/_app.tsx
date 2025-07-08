@@ -1,4 +1,3 @@
-import { NoteProvider } from "@/backend/useNote/useNote";
 import { NoteSyncProvider } from "@/context/NoteSyncProvider";
 import { UserProvider } from "@/backend/useUser/useUser";
 import { client } from "@/client";
@@ -26,6 +25,7 @@ import "swiper/css/effect-flip";
 
 import { IsmacDataProvider } from "@/context/withContext";
 import "react-medium-image-zoom/dist/styles.css";
+import { NoteProvider } from "@/backend/useNote/useNote";
 const queryClient = new QueryClient();
 export default function App({ Component, pageProps }: AppProps) {
   return (

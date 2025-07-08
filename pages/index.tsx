@@ -1,6 +1,5 @@
 import HomePages from "@/infraestructure/home/HomePages";
 import withPWA from "@/services/withPWA";
-import { useMessage } from "cllk";
 import { useIsLogin, useMagicLink } from "openbaas-sdk-react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { client } from "@/client";
@@ -9,45 +8,15 @@ import Signin from "@/components/signin/App";
 
 function Home() {
   const { isLogin } = useIsLogin();
-  const { handleConfirmatinCode, handleGenereteCode } = useMagicLink();
-  const { messagePromise } = useMessage();
 
   return (
     <>
       {isLogin ? (
         <HomePages />
       ) : (
-        <>
-          <GoogleOAuthProvider clientId={client.google ?? ""}>
-            <Signin />
-          </GoogleOAuthProvider>
-
-          {/* <div className="flex justify-center items-center h-screen w-full">
-            <div className="w-full max-w-[600px]">
-              <GoogleOAuthProvider clientId={client.google ?? ""}>
-                <Signin
-                  social
-                  text="Ismac Agenda Digital"
-                  magicLinkConfirm={async (email, code) => {
-                    messagePromise(
-                      async () => {
-                        await handleConfirmatinCode(email, code);
-                      },
-                      {
-                        error: "Error de codigo",
-                        pending: "Verificando codigo",
-                        success: "Bienvenido a Ismac Agenda",
-                      }
-                    );
-                  }}
-                  magicLinkGenerate={async (email) => {
-                    await handleGenereteCode(email);
-                  }}
-                />
-              </GoogleOAuthProvider>
-            </div>
-          </div> */}
-        </>
+        <GoogleOAuthProvider clientId={client.google ?? ""}>
+          <Signin />
+        </GoogleOAuthProvider>
       )}
     </>
   );
