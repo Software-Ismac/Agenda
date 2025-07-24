@@ -1,6 +1,6 @@
 import HomePages from "@/infraestructure/home/HomePages";
 import withPWA from "@/services/withPWA";
-import { useIsLogin, useMagicLink } from "openbaas-sdk-react";
+import { useIsLogin } from "openbaas-sdk-react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { client } from "@/client";
 import withIsmacContext from "@/context/withContext";

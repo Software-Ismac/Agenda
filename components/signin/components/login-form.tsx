@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
+import { SocialLogin } from "@capgo/capacitor-social-login";
+
 import {
+  addToast,
   Button,
   Card,
   CardBody,
@@ -12,49 +15,115 @@ import {
 import { useGoogleLogin } from "@react-oauth/google";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
-import { useIsLogin, useMagicLink, useOpenBaas } from "openbaas-sdk-react";
+import { useIsLogin, useOpenBaas } from "openbaas-sdk-react";
 import { useMessage } from "cllk";
+import { Capacitor } from "@capacitor/core";
+import { client } from "@/client";
 
 interface LoginFormProps {
   onSubmit: (email: string) => void;
   onRegister: () => void; // Add this prop
 }
+const isNative = Capacitor.isNativePlatform();
 
-export const LoginForm: React.FC<LoginFormProps> = ({
-  onSubmit,
-  onRegister,
-}) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit }) => {
+  useEffect(() => {
+    SocialLogin.initialize({
+      google: {
+        webClientId: client.google,
+        mode: "online",
+      },
+    });
+  }, []);
   const [email, setEmail] = React.useState("");
 
   const { uri, setAccessToken, setRefreshToken } = useOpenBaas();
   const { setIsLogin } = useIsLogin();
   const { messagePromise } = useMessage();
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (codeResponse) => {
-      messagePromise(
-        async () => {
-          const res = await fetch(`${uri}/v1/auth/google`, {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${codeResponse.access_token}`,
-            },
+  const googleLogin = isNative
+    ? async () => {
+        try {
+          const response = await SocialLogin.login({
+            provider: "google",
+            options: { scopes: ["email", "profile"], forceRefreshToken: true },
           });
-          const { status, accessToken, refreshToken } = await res.json();
-          if (status) {
-            setAccessToken(accessToken);
-            setRefreshToken(refreshToken);
-            setIsLogin(true);
+
+          if (response.provider === "google") {
+            addToast({
+              title: "Iniciando sesión con Google...",
+              promise: new Promise(async () => {
+                try {
+                  const result = response.result as any;
+                  const token = result.accessToken?.token;
+
+                  if (!token) {
+                    throw new Error("No se encontró el token de acceso.");
+                  }
+
+                  // Envías token o code a tu backend
+                  const res = await fetch(`${uri}/v1/auth/google`, {
+                    method: "POST",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                  });
+
+                  if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(
+                      `Error en el backend: ${res.status} - ${errorText}`
+                    );
+                  }
+
+                  const { status, accessToken, refreshToken } =
+                    await res.json();
+
+                  if (status) {
+                    setAccessToken(accessToken);
+                    setRefreshToken(refreshToken);
+                    setIsLogin(true);
+                  } else {
+                    throw new Error("Autenticación fallida.");
+                  }
+                } catch (error) {
+                  // Puedes manejar el error aquí o dejar que addToast lo capture
+                  console.error("Error en autenticación con Google:", error);
+                  throw error; // Re-lanzar para que addToast pueda mostrar error
+                }
+              }),
+            });
           }
-        },
-        {
-          error: "Error de codigo",
-          pending: "Verificando codigo",
-          success: "Bienvenido a Ismac Agenda",
+        } catch (err) {
+          console.error("Error en login nativo", err);
         }
-      );
-    },
-    flow: "implicit",
-  });
+      }
+    : useGoogleLogin({
+        onSuccess: async (codeResponse) => {
+          await messagePromise(
+            async () => {
+              const res = await fetch(`${uri}/v1/auth/google`, {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${codeResponse.access_token}`,
+                },
+              });
+              const { status, accessToken, refreshToken } = await res.json();
+              if (status) {
+                setAccessToken(accessToken);
+                setRefreshToken(refreshToken);
+                setIsLogin(true);
+              }
+            },
+            {
+              error: "Error de código",
+              pending: "Verificando código",
+              success: "Bienvenido a Ismac Agenda",
+            }
+          );
+        },
+        flow: "implicit",
+      });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,10 +141,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
       <Card className="border-none shadow-lg">
         <CardHeader className="flex flex-col items-center gap-2 pb-0">
           <div className="w-20 h-20 rounded-full bg-primary-100 flex items-center justify-center mb-2">
-            <Icon
-              icon="lucide:calendar"
-              className="text-primary-500 w-10 h-10"
-            />
+            <img className="w-20 h-20" src="/icons/logo512.webp" alt="" />
           </div>
           <h1 className="text-2xl font-bold text-center">
             Ismac Agenda Digital
